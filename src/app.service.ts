@@ -66,7 +66,7 @@ export class AppService {
         return this.tokenContract.address
     }
 
-    getBallotAddress() : string {
+    getBallotAddress(): string {
         return this.ballotContract.address
     }
 
@@ -76,7 +76,7 @@ export class AppService {
 
     requestTokens(
         requestTokensDTO: RequestTokensDTO,
-    ): ethers.ContractTransaction {
+    ): any {
         const messageHash = ethers.utils.keccak256(
             this.abiCoder.encode(
                 ["address", "uint256"],
@@ -89,10 +89,12 @@ export class AppService {
         )
 
         if (expectedSigner === requestTokensDTO.to) {
-            const txResponse: ethers.ContractTransaction =
-                this.tokenContract.mint(requestTokensDTO.to, 1)
-            this.counterTokenRequest += 1
-            return txResponse
+            this.tokenContract
+                .mint(requestTokensDTO.to, 1)
+                .then((txResponse: ethers.ContractTransaction): ethers.ContractTransaction => {
+                    this.counterTokenRequest += 1
+                    return txResponse
+                })
         }
     }
 }
